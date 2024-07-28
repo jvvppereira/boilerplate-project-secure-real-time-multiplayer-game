@@ -10,6 +10,28 @@ const runner = require('./test-runner.js');
 
 const app = express();
 
+const helmet = require("helmet");
+
+app.use(
+  helmet({
+    xDnsPrefetchControl: { allow: false },
+    xPoweredBy: false,
+    referrerPolicy: {
+      policy: ["origin", "same-origin"],
+    },
+  }),
+);
+
+app.use(function(req, res, next) {
+  res.setHeader('x-powered-by', 'PHP 7.4.3');
+  res.setHeader('surrogate-control', 'no-store');
+  res.setHeader('cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('pragma', 'no-cache');
+  res.setHeader('expires', '0');
+  next();
+});
+
+
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use('/assets', express.static(process.cwd() + '/assets'));
 
